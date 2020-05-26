@@ -105,6 +105,7 @@ const Emojis = {
         return button;
     },
     write: (emoji, options) => {
+        console.log(options);
         const input = options.editable;
         if(!input) {
             return;

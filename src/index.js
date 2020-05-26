@@ -12,7 +12,7 @@ const defaults = {
     hidden_categories: [],
 
     pack_url: null,
-    json_url: '/emojis.json',
+    json_url: '../emojis.json',
     json_save_local: false,
 
     tether: true,
@@ -42,6 +42,7 @@ export default class EmojiPanel extends EventEmitter {
         const els = ['container', 'trigger', 'editable'];
         els.forEach(el => {
             if(typeof this.options[el] == 'string') {
+                console.log(this.options[el]);
                 this.options[el] = document.querySelector(this.options[el]);
             }
         });
