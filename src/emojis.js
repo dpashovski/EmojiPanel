@@ -1,3 +1,4 @@
+const emojiAware = require('emoji-aware');
 const modifiers = require('./modifiers');
 import Frequent from './frequent';
 
@@ -105,54 +106,60 @@ const Emojis = {
         return button;
     },
     write: (emoji, options) => {
-        console.log(options);
         const input = options.editable;
-        if(!input) {
+        const editable_content = options.editable_content;
+        if(!input || !editable_content) {
             return;
         }
 
         // Insert the emoji at the end of the text by default
-        let offset = input.textContent.length;
-        if(input.dataset.offset) {
+        let offset = editable_content.textContent.length;
+        if(editable_content.dataset.offset) {
             // Insert the emoji where the rich editor caret was
-            offset = input.dataset.offset;
+            offset = editable_content.dataset.offset;
         }
 
         // Insert the pictographImage
-        const pictographs = input.parentNode.querySelector('.EmojiPanel__pictographs');
+        //const pictographs = input.parentNode.querySelector('.EmojiPanel__pictographs');
         const url = 'https://abs.twimg.com/emoji/v2/72x72/' + emoji.unicode + '.png';
         const image = document.createElement('img');
         image.classList.add('RichEditor-pictographImage');
         image.setAttribute('src', url);
         image.setAttribute('draggable', false);
-        pictographs.appendChild(image);
+        image.dataset.pictographText = emoji.char;
+        //editable_content.appendChild(image);
+
+        let testImage = '<img src="url" draggable="false">';
 
         const span = document.createElement('span');
-        span.classList.add('EmojiPanel__pictographText');
+        /*span.classList.add('EmojiPanel__pictographText');
         span.setAttribute('title', emoji.name);
         span.setAttribute('aria-label', emoji.name);
         span.dataset.pictographText = emoji.char;
         span.dataset.pictographImage = url;
-        span.innerHTML = '&emsp;';
-
-        // If it's empty, remove the default content of the input
-        const div = input.querySelector('div');
-        if(div.innerHTML == '<br>') {
-            div.innerHTML = '';
-        }
+        span.innerHTML = '&emsp;';*/
 
         // Replace each pictograph span with it's native character
-        const picts = div.querySelectorAll('.EmojiPanel__pictographText');
+        const picts = editable_content.querySelectorAll('.EmojiPanel__pictographText');
         [].forEach.call(picts, pict => {
-            div.replaceChild(document.createTextNode(pict.dataset.pictographText), pict);
+            //editable_content.replaceChild(document.createTextNode(pict.dataset.pictographText), pict);
         });
 
         // Split content into array, insert emoji at offset index
-        let content = emojiAware.split(div.textContent);
+        let content = emojiAware.split(editable_content.textContent);
+        let inputContent = emojiAware.split(editable_content.textContent);
+
+        console.log(content);
+
         content.splice(offset, 0, emoji.char);
         content = content.join('');
 
-        div.textContent = content;
+        
+
+        //div.textContent = content;
+
+        input.value = content;
+        editable_content.textContent = content;
 
         // Trigger a refresh of the input
         const event = document.createEvent('HTMLEvents');
@@ -160,7 +167,7 @@ const Emojis = {
         input.dispatchEvent(event);
 
         // Update the offset to after the inserted emoji
-        input.dataset.offset = parseInt(input.dataset.offset, 10) + 1;
+        editable_content.dataset.offset = parseInt(editable_content.dataset.offset, 10) + 1;
     }
 };
 

@@ -23,7 +23,8 @@
         <p>By passing a <code>trigger</code> element, EmojiPanel can be<br>tethered to buttons and used a dropdown.</p>
         <div id="emoji-container">
             <button id="emoji-trigger" class="btn-trigger">🙂</button>
-            <input id="emoji-input" type="text"/>
+            <input type="text" id="emoji-input"/>
+            <div id="emoji-content" contenteditable="true"></div>
             <div class="EmojiPanel__pictographs"></div>
         </div>
     </main>
@@ -37,6 +38,7 @@
                 container: '#emoji-container',
                 trigger: '#emoji-trigger',
                 editable: '#emoji-input',
+                editable_content: '#emoji-content',
                 pack_url: '../img/twemoji.svg'
             });
         };

@@ -3,14 +3,14 @@ const Tether = require('tether');
 const Emojis = require('./emojis');
 
 const Create = (options, emit, toggle) => {
-    if(options.editable) {
+    if(options.editable && options.editable_content) {
         // Set the caret offset on the input
         const handleChange = e => {
-            options.editable.dataset.offset = getCaretPosition(options.editable);
+            options.editable_content.dataset.offset = getCaretPosition(options.editable_content);
         };
-        options.editable.addEventListener('keyup', handleChange);
-        options.editable.addEventListener('change', handleChange);
-        options.editable.addEventListener('click', handleChange);
+        options.editable_content.addEventListener('keyup', handleChange);
+        options.editable_content.addEventListener('change', handleChange);
+        options.editable_content.addEventListener('click', handleChange);
     }
 
     // Create the dropdown panel

@@ -24,3 +24,32 @@
         color: $EmojiPanel-category-title;
     }
 }
+
+#emoji-input {
+    //background-color: #f3f2f2;
+    max-width: 20rem;
+    margin: 2rem auto;
+    border: 1px solid #dcdcdc;
+    height: 2rem;
+    text-align: left;
+    padding: 0 .6rem;
+}
+
+#emoji-content {
+    background-color: #f3f2f2;
+    max-width: 20rem;
+    margin: 2rem auto;
+    border: 1px solid #dcdcdc;
+    height: 7rem;
+    text-align: left;
+    padding: 0 .6rem;
+    overflow: auto;
+}
+
+.RichEditor-pictographImage {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 3px;
+}

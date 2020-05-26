@@ -39,10 +39,14 @@ export default class EmojiPanel extends EventEmitter {
 
         this.options = Object.assign({}, defaults, options);
 
-        const els = ['container', 'trigger', 'editable'];
+        const els = ['container', 'trigger', 'editable', 'editable_content'];
         els.forEach(el => {
             if(typeof this.options[el] == 'string') {
-                console.log(this.options[el]);
+
+                ////////////////////////
+                //console.log(this.options[el]);
+                ////////////////////////
+
                 this.options[el] = document.querySelector(this.options[el]);
             }
         });
