@@ -107,7 +107,25 @@ const Emojis = {
         return button;
     },
     updateInput: (options) => {
+        const editable_content = options.editable_content;
+        const input = options.editable;
 
+        let rawContent = editable_content.cloneNode(true);
+
+        let jajca = rawContent.querySelectorAll('.RichEditor-pictographImage');
+        [].forEach.call(jajca,function(jajce){
+            let newElem = document.createTextNode(jajce.dataset.pictographText);
+            jajce.parentNode.replaceChild(newElem,jajce);
+        });
+
+        input.value = rawContent.innerHTML.replace(/&nbsp;/gi, ' ').replace(/<div><br><\/div>/gi, '').replace(/<p><br><\/p>/gi, '');
+    },
+    updateContentEditable: (options) => {
+        console.log(options.editable.value);
+        console.log(options.editable_content);
+
+        let newHtml = document.createTextNode(options.editable.value);
+        options.editable_content.appendChild(newHtml);
     },
     write: (emoji, options, updateInput=false) => {
         const input = options.editable;
@@ -170,7 +188,7 @@ const Emojis = {
         input.dispatchEvent(event);
 
         // Update the offset to after the inserted emoji
-        editable_content.dataset.offset = parseInt(editable_content.dataset.offset, 10) + 1;
+        //editable_content.dataset.offset = parseInt(editable_content.dataset.offset, 10) + 1;
     },
     pasteHtmlAtCaret: (html) => {
         let sel, range;

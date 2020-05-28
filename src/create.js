@@ -7,6 +7,7 @@ const Create = (options, emit, toggle) => {
         // Set the caret offset on the input
         const handleChange = e => {
             options.editable_content.dataset.offset = Emojis.getCaretOffsetWithin(options.editable_content);
+            Emojis.updateInput(options);
         };
         options.editable_content.addEventListener('keyup', handleChange);
         options.editable_content.addEventListener('change', handleChange);
@@ -159,6 +160,10 @@ const Create = (options, emit, toggle) => {
             attachment,
             targetAttachment
         });
+    }
+
+    if (options.editable && options.editable_content) {
+        Emojis.updateContentEditable(options);
     }
 
     // Return the panel element so we can update it later
