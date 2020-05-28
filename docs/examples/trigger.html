@@ -21,10 +21,10 @@
     <main>
         <h3>Trigger</h3>
         <p>By passing a <code>trigger</code> element, EmojiPanel can be<br>tethered to buttons and used a dropdown.</p>
-        <div id="emoji-container">
+        <div id="emoji-container" class="emoji-container emoji-container--input-trigger">
             <button id="emoji-trigger" class="btn-trigger">🙂</button>
-            <input type="text" id="emoji-input"/>
-            <div id="emoji-content" contenteditable="true"></div>
+            <div id="emoji-content" contenteditable="true" class="emoji-content"></div>
+            <input type="text" id="emoji-input" class="emoji-input"/>
             <div class="EmojiPanel__pictographs"></div>
         </div>
     </main>
@@ -39,6 +39,8 @@
                 trigger: '#emoji-trigger',
                 editable: '#emoji-input',
                 editable_content: '#emoji-content',
+                placement: 'left',
+                tether: false,
                 pack_url: '../img/twemoji.svg'
             });
         };

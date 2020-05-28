@@ -6,11 +6,12 @@ const Create = (options, emit, toggle) => {
     if(options.editable && options.editable_content) {
         // Set the caret offset on the input
         const handleChange = e => {
-            options.editable_content.dataset.offset = getCaretPosition(options.editable_content);
+            options.editable_content.dataset.offset = Emojis.getCaretOffsetWithin(options.editable_content);
         };
         options.editable_content.addEventListener('keyup', handleChange);
         options.editable_content.addEventListener('change', handleChange);
         options.editable_content.addEventListener('click', handleChange);
+        options.editable_content.addEventListener('blur', handleChange);
     }
 
     // Create the dropdown panel
@@ -105,12 +106,12 @@ const Create = (options, emit, toggle) => {
     loadingResults.classList.add('EmojiPanel-loading');
 
     const loadingTitle = document.createElement('p');
-    loadingTitle.classList.add(options.classnames.category);
+    // loadingTitle.classList.add(options.classnames.category);
     loadingTitle.textContent = options.locale.loading;
     loadingResults.appendChild(loadingTitle);
     for(let i = 0; i < 9 * 8; i++) {
         const tempEmoji = document.createElement('button');
-        tempEmoji.classList.add('temp');
+        // tempEmoji.classList.add('temp');
         loadingResults.appendChild(tempEmoji);
     }
 
@@ -132,7 +133,7 @@ const Create = (options, emit, toggle) => {
     options.container.appendChild(panel);
 
     // Tether the dropdown to the trigger
-    let tether;
+        let tether;
     if(options.trigger && options.tether) {
         const placements = ['top', 'right', 'bottom', 'left'];
         if(placements.indexOf(options.placement) == -1) {
@@ -165,31 +166,6 @@ const Create = (options, emit, toggle) => {
         panel,
         tether
     };
-};
-
-const getCaretPosition = el => {
-    let caretOffset = 0;
-    const doc = el.ownerDocument || el.document;
-    const win = doc.defaultView || doc.parentWindow;
-    let sel;
-    if(typeof win.getSelection != 'undefined') {
-        sel = win.getSelection();
-        if(sel.rangeCount > 0) {
-            const range = win.getSelection().getRangeAt(0);
-            const preCaretRange = range.cloneRange();
-            preCaretRange.selectNodeContents(el);
-            preCaretRange.setEnd(range.endContainer, range.endOffset);
-            caretOffset = preCaretRange.toString().length;
-        }
-    } else if((sel = doc.selection) && sel.type != 'Control') {
-        const textRange = sel.createRange();
-        const preCaretTextRange = doc.body.createTextRange();
-        preCaretTextRange.moveToElementText(el);
-        preCaretTextRange.setEndPoint('EndToEnd', textRange);
-        caretOffset = preCaretTextRange.text.length;
-    }
-
-    return caretOffset;
 };
 
 module.exports = Create;

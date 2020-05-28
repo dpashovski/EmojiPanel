@@ -54,12 +54,14 @@ gulp.task('scss', (done) => {
     done();
 });
 
-gulp.task('build', gulp.series('scss', 'js'));
-
 gulp.task('dev', (done) => {
     dev = true;
     done();
-})
+});
+
+gulp.task('build', gulp.series('scss', 'js', (done) => {
+    done();
+}));
 
 gulp.task('watch', gulp.series('dev', 'scss', 'js', (done) => {
     gulp.watch('scss/**/*.scss', gulp.series('scss'));

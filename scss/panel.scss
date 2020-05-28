@@ -13,6 +13,8 @@
     border-radius: $EmojiPanel-border-radius;
     background: $EmojiPanel-background-panel;
     text-align: left;
+    z-index: 1060;
+    border: 1px solid $EmojiPanel-border-input;
 
     @media(min-width: $EmojiPanel-width) {
         width: $EmojiPanel-width;
@@ -58,5 +60,56 @@
         margin: 5px;
         border-radius: $EmojiPanel-border-radius;
         background: #EEE;
+    }
+}
+
+.emoji-container {
+    &--input-trigger {
+        position: relative;
+        max-width: 20rem;
+        margin: 3rem auto;
+        .btn-trigger {
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 5px;
+            z-index: 100;
+            transition: none;
+            background: none;
+            border: none;
+        }
+
+        .emoji-input {
+            background-color: #f3f2f2;
+            max-width: 20rem;
+            margin: 2rem auto;
+            border: 1px solid #dcdcdc;
+            height: 2rem;
+            text-align: left;
+            padding: 0 .6rem;
+        }
+
+        .emoji-content {
+            background-color: #f3f2f2;
+            border: 1px solid #dcdcdc;
+            height: 7rem;
+            text-align: left;
+            padding: 0 3rem 0 .6rem;
+            overflow: auto;
+        }
+
+        .RichEditor-pictographImage {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 3px;
+        }
+
+        .EmojiPanel {
+            position: absolute;
+            top: 7rem;
+            right: 0;
+        }
     }
 }
