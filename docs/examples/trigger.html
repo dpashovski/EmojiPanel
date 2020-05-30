@@ -21,10 +21,11 @@
     <main>
         <h3>Trigger</h3>
         <p>By passing a <code>trigger</code> element, EmojiPanel can be<br>tethered to buttons and used a dropdown.</p>
+        <button id="emoji-load" class="btn-load">Load</button>
         <div id="emoji-container">
+            <div id="emoji-content" class="EmojiPanel" contenteditable="true"></div>
             <button id="emoji-trigger" class="btn-trigger">🙂</button>
-            <input type="text" id="emoji-input"/>
-            <div id="emoji-content" contenteditable="true"></div>
+            <input type="text" id="emoji-input" value="👾Hey 😂😄👾"/>
             <div class="EmojiPanel__pictographs"></div>
         </div>
     </main>
@@ -40,6 +41,11 @@
                 editable: '#emoji-input',
                 editable_content: '#emoji-content',
                 pack_url: '../img/twemoji.svg'
+            });
+
+            btnLoad = document.querySelector('#emoji-load');
+            btnLoad.addEventListener('click', () => {
+                trigger.renderContent();                
             });
         };
     </script>

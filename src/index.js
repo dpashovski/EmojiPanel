@@ -76,6 +76,38 @@ export default class EmojiPanel extends EventEmitter {
             this.tether.position();
         }
     }
+
+    emojiUnicode (emoji) {
+        var comp;
+        if (emoji.length === 1) {
+            comp = emoji.charCodeAt(0);
+        }
+        comp = (
+            (emoji.charCodeAt(0) - 0xD800) * 0x400
+          + (emoji.charCodeAt(1) - 0xDC00) + 0x10000
+        );
+        if (comp < 0) {
+            comp = emoji.charCodeAt(0);
+        }
+        return comp.toString("16");
+    }
+
+    renderContent() {
+        //this.toggle();
+        let charArray = [...this.options.editable.value];
+        charArray.forEach((char) => {
+            let emoji = {unicode: this.emojiUnicode(char), char: char};
+            const button = document.createElement('button');
+            button.setAttribute('type', 'button');
+            button.innerHTML = Emojis.createEl(emoji, this.options);
+            button.classList.add('emoji');
+            button.dataset.unicode = emoji.unicode;
+            button.dataset.char = emoji.char;
+    
+            this.options.editable.appendChild(button);
+            this.options.editable_content.appendChild(button);
+        });        
+    }
 }
 
 if(typeof window != 'undefined') {
