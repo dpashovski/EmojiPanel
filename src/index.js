@@ -13,7 +13,7 @@ const defaults = {
 
     pack_url: null,
     json_url: '../emojis.json',
-    json_save_local: false,
+    json_save_local: true,
 
     tether: true,
     placement: 'bottom',
@@ -42,11 +42,6 @@ export default class EmojiPanel extends EventEmitter {
         const els = ['container', 'trigger', 'editable', 'editable_content'];
         els.forEach(el => {
             if(typeof this.options[el] == 'string') {
-
-                ////////////////////////
-                //console.log(this.options[el]);
-                ////////////////////////
-
                 this.options[el] = document.querySelector(this.options[el]);
             }
         });
@@ -67,7 +62,7 @@ export default class EmojiPanel extends EventEmitter {
 
         this.emit('toggle', open);
         if(open && this.options.search && searchInput) {
-            searchInput.focus();
+            //searchInput.focus();
         }
     }
 

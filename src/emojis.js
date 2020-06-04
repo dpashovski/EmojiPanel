@@ -112,20 +112,70 @@ const Emojis = {
 
         let rawContent = editable_content.cloneNode(true);
 
-        let jajca = rawContent.querySelectorAll('.RichEditor-pictographImage');
-        [].forEach.call(jajca,function(jajce){
-            let newElem = document.createTextNode(jajce.dataset.pictographText);
-            jajce.parentNode.replaceChild(newElem,jajce);
+        let emojis = rawContent.querySelectorAll('.RichEditor-pictographImage');
+        [].forEach.call(emojis,function(emoji){
+            let newElem = document.createTextNode(emoji.dataset.pictographText);
+            emoji.parentNode.replaceChild(newElem,emoji);
         });
 
-        input.value = rawContent.innerHTML.replace(/&nbsp;/gi, ' ').replace(/<div><br><\/div>/gi, '').replace(/<p><br><\/p>/gi, '');
+        input.value = rawContent.innerHTML.replace(/&nbsp;/gi, ' ').replace(/<div><br><\/div>/gi, '').replace(/<p><br><\/p>/gi, '').trim();
+
+        //Trigger this events in order to work with Angular 1.6.5
+        input.dispatchEvent(new Event('trigger'));
+        input.dispatchEvent(new Event('change'));
     },
     updateContentEditable: (options) => {
-        console.log(options.editable.value);
-        console.log(options.editable_content);
-
         let newHtml = document.createTextNode(options.editable.value);
+        let emojiRegex = ['(?:[\u2700-\u27bf]|(?:\\ud83c[\\udde6-\\uddff]){2}|[\\ud800-\\udbff][\\udc00-\\udfff]|[\u0023-\u0039]\\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\\ud83c[\\udd70-\\udd71]|\\ud83c[\\udd7e-\\udd7f]|\\ud83c\\udd8e|\\ud83c[\\udd91-\\udd9a]|\\ud83c[\\udde6-\\uddff]|[\\ud83c[\\ude01-\\ude02]|\\ud83c\\ude1a|\\ud83c\\ude2f|[\\ud83c[\\ude32-\\ude3a]|[\\ud83c[\\ude50-\\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\\ud83c\\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\\ud83c\\udccf|\u2934|\u2935|[\u2190-\u21ff])']
+
         options.editable_content.appendChild(newHtml);
+
+        var ranges = [
+            '\ud83c[\udf00-\udfff]', // U+1F300 to U+1F3FF
+            '\ud83d[\udc00-\ude4f]', // U+1F400 to U+1F64F
+            '\ud83d[\ude80-\udeff]'  // U+1F680 to U+1F6FF
+        ];
+        options.editable_content.innerHTML = options.editable_content.innerHTML.replace(
+            new RegExp(ranges.join('|'), 'g'),
+            '<span class="RichEditor-pictographImage" data-emoji="$&">$&</span>');
+
+        Emojis.replaceEmojis(options);
+
+    },
+    replaceEmojis: (options) => {
+        let emojis = options.editable_content.querySelectorAll('.RichEditor-pictographImage');
+        let json = JSON.parse(localStorage.getItem('EmojiPanel-json')); //TODO: Fallback if json is not saved in localstorage
+
+        /*json.forEach((category) => {
+            for (let key in category.emojis) {
+                if (category.emojis.hasOwnProperty(key)) {
+                    let char = category.emojis[key]['char'];
+                    console.log(char);
+                }
+            }
+        });*/
+
+        [].forEach.call(emojis,function(emoji){
+            let emojiData = emoji.dataset.emoji;
+
+            json.forEach((category) => {
+                for (let key in category.emojis) {
+                    if (category.emojis.hasOwnProperty(key)) {
+                        let char = category.emojis[key]['char'];
+                        //let unicode = category.emojis[key]['unicode'];
+
+                        let url = 'https://abs.twimg.com/emoji/v2/72x72/' + category.emojis[key]['unicode'] + '.png';
+
+                        if (emojiData === char) {
+                            emoji.style.backgroundImage = "url('"+url+"')";
+                        }
+                    }
+                }
+            });
+
+            //let newElem = document.createTextNode(emoji.dataset.pictographText);
+            //emoji.parentNode.replaceChild(newElem,emoji);
+        });
     },
     write: (emoji, options, updateInput=false) => {
         const input = options.editable;
@@ -150,10 +200,12 @@ const Emojis = {
         // image.setAttribute('draggable', false);
         // image.dataset.pictographText = emoji.char;
 
-        const imgHtml = '<img class="RichEditor-pictographImage" src="'+url+'" draggable="false" data-pictograph-text="'+emoji.char+'">';
+        //const imgHtml = '<img class="RichEditor-pictographImage" src="'+url+'" d                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             raggable="false" data-pictograph-text="'+emoji.char+'">';
+
+        const imgHtml = '<span class="RichEditor-pictographImage" data-emoji="'+emoji.char+'" style="background-image:url('+url+')">'+emoji.char+'</span>';
 
         editable_content.focus();
-        Emojis.setCaretPositionWithin(editable_content,editable_content.dataset.offset);
+        //Emojis.setCaretPositionWithin(editable_content,editable_content.dataset.offset);
         Emojis.pasteHtmlAtCaret(imgHtml);
 
         const span = document.createElement('span');
@@ -171,8 +223,13 @@ const Emojis = {
         });
 
         // Split content into array, insert emoji at offset index
+
+        console.log(editable_content.textContent);
+
         let content = emojiAware.split(editable_content.textContent);
         let inputContent = emojiAware.split(editable_content.textContent);
+
+        console.log(content);
 
         content.splice(offset, 0, emoji.char);
         content = content.join('');

@@ -9,10 +9,17 @@ const Create = (options, emit, toggle) => {
             options.editable_content.dataset.offset = Emojis.getCaretOffsetWithin(options.editable_content);
             Emojis.updateInput(options);
         };
+        const closePanel = e => {
+            if (!e.target.closest('.emoji-container') && options.container.querySelector('.EmojiPanel').classList.contains(options.classnames.open)) {
+                toggle();
+            }
+        };
         options.editable_content.addEventListener('keyup', handleChange);
         options.editable_content.addEventListener('change', handleChange);
         options.editable_content.addEventListener('click', handleChange);
         options.editable_content.addEventListener('blur', handleChange);
+
+        document.addEventListener('click',closePanel);
     }
 
     // Create the dropdown panel
@@ -30,7 +37,10 @@ const Create = (options, emit, toggle) => {
     if(options.trigger) {
         panel.classList.add(options.classnames.trigger);
         // Listen for the trigger
-        options.trigger.addEventListener('click', () => toggle());
+        options.trigger.addEventListener('click', () => {
+            Emojis.setCaretPositionWithin(options.editable_content,options.editable_content.dataset.offset);
+            toggle();
+        });
 
         // Create the tooltip
         options.trigger.setAttribute('title', options.locale.add);
