@@ -114,7 +114,7 @@ const Emojis = {
 
         let emojis = rawContent.querySelectorAll('.RichEditor-pictographImage');
         [].forEach.call(emojis,function(emoji){
-            let newElem = document.createTextNode(emoji.dataset.pictographText);
+            let newElem = document.createTextNode(emoji.dataset.emoji);
             emoji.parentNode.replaceChild(newElem,emoji);
         });
 
@@ -137,7 +137,7 @@ const Emojis = {
         ];
         options.editable_content.innerHTML = options.editable_content.innerHTML.replace(
             new RegExp(ranges.join('|'), 'g'),
-            '<span class="RichEditor-pictographImage" data-emoji="$&">$&</span>');
+            '<span class="RichEditor-pictographImage" data-emoji="$&" contenteditable="false">$&</span>');
 
         Emojis.replaceEmojis(options);
 
@@ -202,7 +202,7 @@ const Emojis = {
 
         //const imgHtml = '<img class="RichEditor-pictographImage" src="'+url+'" d                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             raggable="false" data-pictograph-text="'+emoji.char+'">';
 
-        const imgHtml = '<span class="RichEditor-pictographImage" data-emoji="'+emoji.char+'" style="background-image:url('+url+')">'+emoji.char+'</span>';
+        const imgHtml = '<span class="RichEditor-pictographImage" data-emoji="'+emoji.char+'" style="background-image:url('+url+')" contenteditable="false">'+emoji.char+'</span>';
 
         editable_content.focus();
         //Emojis.setCaretPositionWithin(editable_content,editable_content.dataset.offset);
@@ -226,7 +226,7 @@ const Emojis = {
 
         console.log(editable_content.textContent);
 
-        let content = emojiAware.split(editable_content.textContent);
+        let content = editable_content.textContent.split(editable_content.textContent);
         let inputContent = emojiAware.split(editable_content.textContent);
 
         console.log(content);
