@@ -76,6 +76,7 @@ const Emojis = {
 
         const button = document.createElement('button');
         button.setAttribute('type', 'button');
+        button.setAttribute('title', emoji.shortname);
         button.innerHTML = Emojis.createEl(emoji, options);
         button.classList.add('emoji');
         button.dataset.unicode = emoji.unicode;
