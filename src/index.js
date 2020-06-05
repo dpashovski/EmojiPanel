@@ -4,6 +4,7 @@ const Create = require('./create');
 const Emojis = require('./emojis');
 const List = require('./list');
 const classnames = require('./classnames');
+const emojiAware = require('emoji-aware');
 
 const defaults = {
     search: true,
@@ -57,6 +58,8 @@ export default class EmojiPanel extends EventEmitter {
 
         Emojis.load(this.options)
             .then(res => {
+                this.json = res[1];
+                this.emit('loaded', this);
                 List(this.options, this.panel, res[1], this.emit.bind(this));
             });
     }
@@ -93,7 +96,7 @@ export default class EmojiPanel extends EventEmitter {
     }
 
     renderContent() {
-        //this.toggle();
+        // TODO: Check if json is loaded
         let charArray = [...this.options.editable.value];
         charArray.forEach((char) => {
             let emoji = {unicode: this.emojiUnicode(char), char: char};
@@ -107,6 +110,59 @@ export default class EmojiPanel extends EventEmitter {
             this.options.editable.appendChild(button);
             this.options.editable_content.appendChild(button);
         });        
+    }
+
+    createIcon(emoji) {
+        let content = Emojis.createEl(emoji, this.options);
+        if (content.length > 4) {
+            //TODO: Use span or div instaed of button. Maybe just remove hove from button?
+            const button = document.createElement('button');
+            button.setAttribute('type', 'button');
+            button.innerHTML = Emojis.createEl(emoji, this.options);
+            button.classList.add('emoji');
+            button.dataset.unicode = emoji.unicode;
+            button.dataset.char = emoji.char;
+        
+            return button;
+        }
+        return content;
+    }
+
+    appendUnicodeAsImageToElement(element, input) {
+        let k, len, split_on_unicode, text, val;
+        if (!input) {
+            return;
+        }
+        split_on_unicode = emojiAware.split(input);
+        for (k = 0, len = split_on_unicode.length; k < len; k++) {
+            let char = split_on_unicode[k];
+            //let emoji = {unicode: this.emojiUnicode(char), char: char};
+            let emoji = this.findEmoji(char);
+            if (emoji) {
+                val = this.createIcon(emoji);
+            } else {
+                val = char;
+            }
+            if (val instanceof String) {
+                val = document.createTextNode(val);
+            }
+            element.append(val);
+        }
+    }
+
+    findEmoji(char) {
+        let match = undefined;
+        if (this.json) {
+            this.json.find(category => {
+                match = category.emojis.find(emoji => {
+                    return emoji.char == char;
+                });
+                if (match) {
+                    return true;
+                }
+            });
+        }
+        return match;
     }
 }
 

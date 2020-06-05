@@ -120,14 +120,16 @@ const Emojis = {
         }
 
         // Insert the pictographImage
-        //const pictographs = input.parentNode.querySelector('.EmojiPanel__pictographs');
-        const url = 'https://abs.twimg.com/emoji/v2/72x72/' + emoji.unicode + '.png';
-        const image = document.createElement('img');
-        image.classList.add('RichEditor-pictographImage');
-        image.setAttribute('src', url);
-        image.setAttribute('draggable', false);
-        image.dataset.pictographText = emoji.char;
-        //editable_content.appendChild(image);
+        const pictographs = input.parentNode.querySelector('.EmojiPanel__pictographs');
+        if (pictographs) {
+            const url = 'https://abs.twimg.com/emoji/v2/72x72/' + emoji.unicode + '.png';
+            const image = document.createElement('img');
+            image.classList.add('RichEditor-pictographImage');
+            image.setAttribute('src', url);
+            image.setAttribute('draggable', false);
+            image.dataset.pictographText = emoji.char;
+            pictographs.appendChild(image);
+        }
 
         let testImage = '<img src="url" draggable="false">';
 
