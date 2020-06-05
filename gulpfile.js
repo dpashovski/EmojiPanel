@@ -54,15 +54,25 @@ gulp.task('scss', (done) => {
     done();
 });
 
-gulp.task('build', gulp.series('scss', 'js'));
+gulp.task('js_area', (done) => {
+    gulp.src('./src/emojiarea/*.js')
+        .pipe(!dev ? uglify() : util.noop())
+        .pipe(gulp.dest('./dist/emojiarea'))
+        .pipe(gulp.dest('./docs/js/emojiarea'))
+
+    done();
+});
+
+gulp.task('build', gulp.series('scss', 'js', 'js_area'));
 
 gulp.task('dev', (done) => {
     dev = true;
     done();
 })
 
-gulp.task('watch', gulp.series('dev', 'scss', 'js', (done) => {
+gulp.task('watch', gulp.series('dev', 'scss', 'js', 'js_area', (done) => {
     gulp.watch('scss/**/*.scss', gulp.series('scss'));
+    gulp.watch('src/emojiarea/*.js', gulp.series('js_area'));
     done();
 }));
 
