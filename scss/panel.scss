@@ -23,10 +23,12 @@
     &--trigger {
         visibility: hidden;
         pointer-events: none;
+        display: none;
     }
     &--open {
         visibility: visible;
         pointer-events: inherit;
+        display: block;
     }
 
     button {
