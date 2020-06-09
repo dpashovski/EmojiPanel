@@ -172,10 +172,6 @@ const Create = (options, emit, toggle) => {
         });
     }
 
-    if (options.editable && options.editable_content) {
-        Emojis.updateContentEditable(options);
-    }
-
     // Return the panel element so we can update it later
     return {
         panel,
