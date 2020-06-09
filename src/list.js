@@ -86,7 +86,6 @@ const list = (options, panel, json, emit) => {
                 });
                 searchTitle.style.display = 'none';
                 emptyState.style.display = 'none';
-
                 let frequentList = localStorage.getItem('EmojiPanel-frequent');
                 if(frequentList) {
                     frequentList = JSON.parse(frequentList);
@@ -111,6 +110,7 @@ const list = (options, panel, json, emit) => {
     results.querySelector('.EmojiPanel-loading').remove();
 
     if(options.frequent == true) {
+        //localStorage.removeItem('EmojiPanel-frequent'); Reset already saved frequent emojis with this
         let frequentList = localStorage.getItem('EmojiPanel-frequent');
         if(frequentList) {
             frequentList = JSON.parse(frequentList);
