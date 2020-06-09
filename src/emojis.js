@@ -60,7 +60,6 @@ const Emojis = {
                 return `<svg viewBox="0 0 20 20"><use xlink:href="#${emoji.unicode}"></use></svg>`;
             }
         }
-
         // Fallback to the emoji char if the pack does not have the sprite, or no pack
         return emoji.char;
     },
@@ -124,7 +123,7 @@ const Emojis = {
         input.dispatchEvent(new Event('trigger'));
         input.dispatchEvent(new Event('change'));
     },
-    updateContentEditable: (options) => {
+    updateContentEditable: (options,json) => {
         let newHtml = document.createTextNode(options.editable.value);
         let emojiRegex = ['(?:[\u2700-\u27bf]|(?:\\ud83c[\\udde6-\\uddff]){2}|[\\ud800-\\udbff][\\udc00-\\udfff]|[\u0023-\u0039]\\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\\ud83c[\\udd70-\\udd71]|\\ud83c[\\udd7e-\\udd7f]|\\ud83c\\udd8e|\\ud83c[\\udd91-\\udd9a]|\\ud83c[\\udde6-\\uddff]|[\\ud83c[\\ude01-\\ude02]|\\ud83c\\ude1a|\\ud83c\\ude2f|[\\ud83c[\\ude32-\\ude3a]|[\\ud83c[\\ude50-\\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\\ud83c\\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\\ud83c\\udccf|\u2934|\u2935|[\u2190-\u21ff])']
 
@@ -133,21 +132,10 @@ const Emojis = {
             new RegExp(emojiRegex.join('|'), 'g'),
             '<span class="RichEditor-pictographImage" data-emoji="$&" contenteditable="false">$&</span>');
 
-        Emojis.replaceEmojis(options);
-
+        Emojis.replaceEmojis(options,json);
     },
-    replaceEmojis: (options) => {
+    replaceEmojis: (options,json) => {
         let emojis = options.editable_content.querySelectorAll('.RichEditor-pictographImage');
-        let json = JSON.parse(localStorage.getItem('EmojiPanel-json')); //TODO: Fallback if json is not saved in localstorage
-
-        /*json.forEach((category) => {
-            for (let key in category.emojis) {
-                if (category.emojis.hasOwnProperty(key)) {
-                    let char = category.emojis[key]['char'];
-                    console.log(char);
-                }
-            }
-        });*/
 
         [].forEach.call(emojis,function(emoji){
             let emojiData = emoji.dataset.emoji;
@@ -156,8 +144,6 @@ const Emojis = {
                 for (let key in category.emojis) {
                     if (category.emojis.hasOwnProperty(key)) {
                         let char = category.emojis[key]['char'];
-                        //let unicode = category.emojis[key]['unicode'];
-
                         let url = 'https://abs.twimg.com/emoji/v2/72x72/' + category.emojis[key]['unicode'] + '.png';
 
                         if (emojiData === char) {
@@ -167,8 +153,6 @@ const Emojis = {
                 }
             });
 
-            //let newElem = document.createTextNode(emoji.dataset.pictographText);
-            //emoji.parentNode.replaceChild(newElem,emoji);
         });
     },
     write: (emoji, options, updateInput=false) => {
@@ -185,56 +169,20 @@ const Emojis = {
             offset = editable_content.dataset.offset;
         }
 
-        // Insert the pictographImage
-        //const pictographs = input.parentNode.querySelector('.EmojiPanel__pictographs');
+        // Prepare url to be sat as background image on the span in contentEditable element
         const url = 'https://abs.twimg.com/emoji/v2/72x72/' + emoji.unicode + '.png';
-        // const image = document.createElement('img');
-        // image.classList.add('RichEditor-pictographImage');
-        // image.setAttribute('src', url);
-        // image.setAttribute('draggable', false);
-        // image.dataset.pictographText = emoji.char;
-
-        //const imgHtml = '<img class="RichEditor-pictographImage" src="'+url+'" d                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             raggable="false" data-pictograph-text="'+emoji.char+'">';
-
         const imgHtml = '<span class="RichEditor-pictographImage" data-emoji="'+emoji.char+'" style="background-image:url('+url+')" contenteditable="false">'+emoji.char+'</span>';
 
+        //Return the focus on the content editable element after it loses due to the click on the emojis panel
         editable_content.focus();
-        //Emojis.setCaretPositionWithin(editable_content,editable_content.dataset.offset);
+
+        //Insert the span with the emoji
         Emojis.pasteHtmlAtCaret(imgHtml);
-
-        const span = document.createElement('span');
-        /*span.classList.add('EmojiPanel__pictographText');
-        span.setAttribute('title', emoji.name);
-        span.setAttribute('aria-label', emoji.name);
-        span.dataset.pictographText = emoji.char;
-        span.dataset.pictographImage = url;
-        span.innerHTML = '&emsp;';*/
-
-        // Replace each pictograph span with it's native character
-        const picts = editable_content.querySelectorAll('.EmojiPanel__pictographText');
-        [].forEach.call(picts, pict => {
-            //editable_content.replaceChild(document.createTextNode(pict.dataset.pictographText), pict);
-        });
-
-        // Split content into array, insert emoji at offset index
-        let content = editable_content.textContent.split(editable_content.textContent);
-        let inputContent = emojiAware.split(editable_content.textContent);
-
-        content.splice(offset, 0, emoji.char);
-        content = content.join('');
-
-        //div.textContent = content;
-
-        //input.value = content;
-        //editable_content.textContent = content;
 
         // Trigger a refresh of the input
         const event = document.createEvent('HTMLEvents');
         event.initEvent('mousedown', false, true);
         input.dispatchEvent(event);
-
-        // Update the offset to after the inserted emoji
-        //editable_content.dataset.offset = parseInt(editable_content.dataset.offset, 10) + 1;
     },
     pasteHtmlAtCaret: (html) => {
         let sel, range;
@@ -279,56 +227,6 @@ const Emojis = {
         );
     },
     getCaretOffsetWithin : node => {
-        // var treeWalker = Emojis.createTreeWalker(node);
-        // var sel = window.getSelection();
-        //
-        // var pos = {
-        //     start: 0,
-        //     end: 0
-        // };
-        //
-        // var isBeyondStart = false;
-        //
-        // while(treeWalker.nextNode()) {
-        //
-        //     // anchorNode is where the selection starts
-        //     if (!isBeyondStart && treeWalker.currentNode === sel.anchorNode ) {
-        //
-        //         isBeyondStart = true;
-        //
-        //         // sel object gives pos within the current html element only
-        //         // the tree walker reached that node
-        //         // and the `Selection` obj contains the caret offset in that el
-        //         pos.start += sel.anchorOffset;
-        //
-        //         if (sel.isCollapsed) {
-        //             pos.end = pos.start;
-        //             break;
-        //         }
-        //     } else if (!isBeyondStart) {
-        //
-        //         // The node we are looking for is after
-        //         // therefore let's sum the full length of that el
-        //         pos.start += treeWalker.currentNode.length;
-        //     }
-        //
-        //     // FocusNode is where the selection stops
-        //     if (!sel.isCollapsed && treeWalker.currentNode === sel.focusNode) {
-        //
-        //         // sel object gives pos within the current html element only
-        //         // the tree walker reached that node
-        //         // and the `Selection` obj contains the caret offset in that el
-        //         pos.end += sel.focusOffset;
-        //         break;
-        //     } else if (!sel.isCollapsed) {
-        //
-        //         // The node we are looking for is after
-        //         // therefore let's sum the full length of that el
-        //         pos.end += treeWalker.currentNode.length;
-        //     }
-        // }
-        // return pos;
-
         let range = window.getSelection().getRangeAt(0);
 
         let treeWalker = document.createTreeWalker(

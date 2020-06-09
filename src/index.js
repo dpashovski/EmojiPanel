@@ -61,9 +61,6 @@ export default class EmojiPanel extends EventEmitter {
         const searchInput = this.panel.querySelector('.' + this.options.classnames.searchInput);
 
         this.emit('toggle', open);
-        if(open && this.options.search && searchInput) {
-            //searchInput.focus();
-        }
     }
 
     reposition() {
