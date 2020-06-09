@@ -53,6 +53,10 @@ export default class EmojiPanel extends EventEmitter {
         Emojis.load(this.options)
             .then(res => {
                 List(this.options, this.panel, res[1], this.emit.bind(this));
+
+                if (this.options.editable && this.options.editable_content) {
+                    Emojis.updateContentEditable(this.options);
+                }            
             });
     }
 
