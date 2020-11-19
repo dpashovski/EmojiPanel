@@ -133,7 +133,7 @@ const Emojis = {
             new RegExp(emojiRegex.join('|'), 'g'),
             zeroWidthChar+'<span class="RichEditor-pictographImage" data-emoji="$&" contenteditable="false">$&</span>'+zeroWidthChar);
 
-        Emojis.cleanUpContenteditable(options); //Remove zero width characters which are added issue with selecting the emojis
+        Emojis.cleanUpContenteditable(options); //Remove zero width characters which are added to fix the issue with selecting the emojis
         Emojis.replaceEmojis(options,json);
     },
     replaceEmojis: (options,json) => {
@@ -172,12 +172,12 @@ const Emojis = {
             offset = editable_content.dataset.offset;
         }
 
-        // Prepare url to be sat as background image on the span in contentEditable element
+        // Prepare url to be set as background image on the span in contentEditable element
         const url = 'https://abs.twimg.com/emoji/v2/72x72/' + emoji.unicode + '.png';
         const imgHtml = zeroWidthChar + '<span class="RichEditor-pictographImage" data-emoji="'+emoji.char+'" style="background-image:url('+url+')" contenteditable="false">'+emoji.char+'</span>' + zeroWidthChar;
 
         //Return the focus on the content editable element after it loses due to the click on the emojis panel
-        editable_content.focus();
+        Emojis.setCaretPositionWithin(editable_content,offset);
 
         //Insert the span with the emoji
         Emojis.pasteHtmlAtCaret(imgHtml);
@@ -303,10 +303,7 @@ const Emojis = {
         }
     },
     cleanUpContenteditable : (options) => {
-        var count = 0; //Just for testing
-
         options.editable_content.innerHTML = options.editable_content.innerHTML.replace(/(?!^)\u200B(?!$)/g, function(){
-            count++;
             return '';
         });
     },
