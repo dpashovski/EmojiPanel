@@ -110,13 +110,6 @@ const Emojis = {
         const input = options.editable;
 
         let rawContent = editable_content.cloneNode(true);
-
-        let emojis = rawContent.querySelectorAll('.RichEditor-pictographImage');
-        [].forEach.call(emojis,function(emoji){
-            let newElem = document.createTextNode(emoji.dataset.emoji);
-            emoji.parentNode.replaceChild(newElem,emoji);
-        });
-
         input.value = rawContent.innerText.replace(/&nbsp;/gi, ' ').replace(/<div><br><\/div>/gi, '').replace(/<p><br><\/p>/gi, '').trim();
 
         //Trigger this events in order to work with Angular 1.6.5
@@ -125,45 +118,13 @@ const Emojis = {
     },
     updateContentEditable: (options,json) => {
         let newHtml = document.createTextNode(options.editable.value);
-        let emojiRegex = ['(?:[\u2700-\u27bf]|(?:\\ud83c[\\udde6-\\uddff]){2}|[\\ud800-\\udbff][\\udc00-\\udfff]|[\u0023-\u0039]\\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\\ud83c[\\udd70-\\udd71]|\\ud83c[\\udd7e-\\udd7f]|\\ud83c\\udd8e|\\ud83c[\\udd91-\\udd9a]|\\ud83c[\\udde6-\\uddff]|[\\ud83c[\\ude01-\\ude02]|\\ud83c\\ude1a|\\ud83c\\ude2f|[\\ud83c[\\ude32-\\ude3a]|[\\ud83c[\\ude50-\\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\\ud83c\\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\\ud83c\\udccf|\u2934|\u2935|[\u2190-\u21ff])']
-        const zeroWidthChar = '&#8203;';
-
         options.editable_content.appendChild(newHtml);
-        options.editable_content.innerHTML = options.editable_content.innerHTML.replace(
-            new RegExp(emojiRegex.join('|'), 'g'),
-            zeroWidthChar+'<span class="RichEditor-pictographImage" data-emoji="$&" contenteditable="false">$&</span>'+zeroWidthChar);
-
-        Emojis.cleanUpContenteditable(options); //Remove zero width characters which are added to fix the issue with selecting the emojis
-        Emojis.replaceEmojis(options,json);
-    },
-    replaceEmojis: (options,json) => {
-        let emojis = options.editable_content.querySelectorAll('.RichEditor-pictographImage');
-
-        [].forEach.call(emojis,function(emoji){
-            let emojiData = emoji.dataset.emoji;
-
-            json.forEach((category) => {
-                for (let key in category.emojis) {
-                    if (category.emojis.hasOwnProperty(key)) {
-                        let char = category.emojis[key]['char'];
-                        let url = 'https://abs.twimg.com/emoji/v2/72x72/' + category.emojis[key]['unicode'] + '.png';
-
-                        if (emojiData === char) {
-                            emoji.style.backgroundImage = "url('"+url+"')";
-                        }
-                    }
-                }
-            });
-
-        });
     },
     write: (emoji, options, updateInput=false) => {
         const input = options.editable;
         const editable_content = options.editable_content;
-        const zeroWidthChar = '&#8203;';
-        if(!input || !editable_content) {
-            return;
-        }
+
+        if(!input || !editable_content) { return; }
 
         // Insert the emoji at the end of the text by default
         let offset = editable_content.textContent.length;
@@ -172,15 +133,11 @@ const Emojis = {
             offset = editable_content.dataset.offset;
         }
 
-        // Prepare url to be set as background image on the span in contentEditable element
-        const url = 'https://abs.twimg.com/emoji/v2/72x72/' + emoji.unicode + '.png';
-        const imgHtml = zeroWidthChar + '<span class="RichEditor-pictographImage" data-emoji="'+emoji.char+'" style="background-image:url('+url+')" contenteditable="false">'+emoji.char+'</span>' + zeroWidthChar;
-
         //Return the focus on the content editable element after it loses due to the click on the emojis panel
         Emojis.setCaretPositionWithin(editable_content,offset);
 
         //Insert the span with the emoji
-        Emojis.pasteHtmlAtCaret(imgHtml);
+        Emojis.pasteHtmlAtCaret(emoji.char);
 
         // Trigger a refresh of the input
         const event = document.createEvent('HTMLEvents');
@@ -301,11 +258,6 @@ const Emojis = {
                 break;
             }
         }
-    },
-    cleanUpContenteditable : (options) => {
-        options.editable_content.innerHTML = options.editable_content.innerHTML.replace(/(?!^)\u200B(?!$)/g, function(){
-            return '';
-        });
     },
 };
 
