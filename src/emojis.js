@@ -134,8 +134,8 @@ const Emojis = {
         }
 
         //Return the focus on the content editable element after it loses due to the click on the emojis panel
+        // Emojis.setCaretPositionWithin(editable_content,offset);
         Emojis.setCaretPositionWithin(editable_content,offset);
-
         //Insert the span with the emoji
         Emojis.pasteHtmlAtCaret(emoji.char);
 
@@ -228,37 +228,41 @@ const Emojis = {
         var treeWalker = Emojis.createTreeWalker(node);
         var currentPos = 0;
 
-        while(treeWalker.nextNode()) {
+        if (index>0) {
+            while(treeWalker.nextNode()) {
 
-            // while we don't reach the node that contains
-            // our index we increment `currentPos`
-            currentPos += treeWalker.currentNode.length;
+                // while we don't reach the node that contains
+                // our index we increment `currentPos`
+                currentPos += treeWalker.currentNode.length;
 
-            if (currentPos >= index) {
+                if (currentPos >= index) {
 
-                // offset is relative to the current html element
-                // We get the value before reaching the node that goes
-                // over the thresold and then calculate the offset
-                // within the current node.
-                var prevValue = currentPos - treeWalker.currentNode.length;
-                var offset = index - prevValue;
+                    // offset is relative to the current html element
+                    // We get the value before reaching the node that goes
+                    // over the thresold and then calculate the offset
+                    // within the current node.
+                    var prevValue = currentPos - treeWalker.currentNode.length;
+                    var offset = index - prevValue;
 
-                // create a new range that will set the caret
-                // at the good position
-                var range = document.createRange();
-                range.setStart(treeWalker.currentNode, offset);
-                range.collapse(true);
+                    // create a new range that will set the caret
+                    // at the good position
+                    var range = document.createRange();
+                    range.setStart(treeWalker.currentNode, offset);
+                    range.collapse(true);
 
-                // Update the selection to reflect the range
-                // change on the UI
-                var sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
+                    // Update the selection to reflect the range
+                    // change on the UI
+                    var sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
 
-                break;
+                    break;
+                }
             }
+        } else {
+            node.focus();
         }
-    },
+    }
 };
 
 module.exports = Emojis;
